@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jacobsa/go-serial/serial"
+	"go.bug.st/serial"
 	"go.uber.org/zap"
 
 	"github.com/omriharel/deej/pkg/deej/util"
@@ -26,7 +26,7 @@ type SerialIO struct {
 
 	stopChannel chan bool
 	connected   bool
-	connOptions serial.OpenOptions
+	connOptions struct { PortName string; BaudRate uint }
 	conn        io.ReadWriteCloser
 
 	lastKnownNumSliders        int
@@ -74,29 +74,18 @@ func (sio *SerialIO) Start() error {
 		return errors.New("serial: connection already active")
 	}
 
-	// set minimum read size according to platform (0 for windows, 1 for linux)
-	// this prevents a rare bug on windows where serial reads get congested,
-	// resulting in significant lag
-	minimumReadSize := 0
-	if util.Linux() {
-		minimumReadSize = 1
+	sio.connOptions.PortName = sio.deej.config.ConnectionInfo.COMPort
+	sio.connOptions.BaudRate = uint(sio.deej.config.ConnectionInfo.BaudRate)
+	mode := &serial.Mode{
+		BaudRate: int(sio.connOptions.BaudRate),
+		DataBits: 8,
+		Parity: serial.NoParity,
+		StopBits: serial.OneStopBit,
+		InitialStatusBits: &serial.ModemOutputBits{DTR: false, RTS: false},
 	}
-
-	sio.connOptions = serial.OpenOptions{
-		PortName:        sio.deej.config.ConnectionInfo.COMPort,
-		BaudRate:        uint(sio.deej.config.ConnectionInfo.BaudRate),
-		DataBits:        8,
-		StopBits:        1,
-		MinimumReadSize: uint(minimumReadSize),
-	}
-
-	sio.logger.Debugw("Attempting serial connection",
-		"comPort", sio.connOptions.PortName,
-		"baudRate", sio.connOptions.BaudRate,
-		"minReadSize", minimumReadSize)
-
+	sio.logger.Debugw("Attempting serial connection", "comPort", sio.connOptions.PortName, "baudRate", mode.BaudRate, "DTR", false, "RTS", false)
 	var err error
-	sio.conn, err = serial.Open(sio.connOptions)
+	sio.conn, err = serial.Open(sio.connOptions.PortName, mode)
 	if err != nil {
 
 		// might need a user notification here, TBD
