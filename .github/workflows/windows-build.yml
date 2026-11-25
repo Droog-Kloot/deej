@@ -1,0 +1,31 @@
+name: Windows build
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.x'
+          cache: false
+      - name: Resolve dependencies
+        run: go mod tidy
+      - name: Build Windows executables
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist
+          go build -ldflags "-H=windowsgui -X main.versionTag=v0.9.11 -X main.buildType=release -X main.gitCommit=$env:GITHUB_SHA" -o dist/deej.exe ./pkg/deej/cmd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go build -ldflags "-X main.versionTag=v0.9.11 -X main.buildType=dev -X main.gitCommit=$env:GITHUB_SHA" -o dist/deej-debug.exe ./pkg/deej/cmd
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item config.yaml dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deej-windows-v0.9.11
+          path: dist/
