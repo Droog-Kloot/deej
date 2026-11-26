@@ -1,8 +1,31 @@
-# deej
+# deej — unofficial vibe-coded update
+
+> **Independent, AI-assisted fork — experimental Windows compatibility update**
+>
+> This fork is a vibe-coded update created with the assistance of ChatGPT. It is an independent community experiment by Droog-Kloot, who is not affiliated with, endorsed by, or acting on behalf of the original author, Omri Harel, or the original deej project.
+>
+> All credit for the original deej software, hardware design and documentation belongs to the original author and upstream contributors. The original license and copyright notices remain applicable.
+>
+> The changes in this fork are experimental, have not been fully validated, and are provided as-is. Please report issues specific to this fork here rather than to the upstream author.
+
+## What's changed in this fork?
+
+- Replaced the legacy serial library with `go.bug.st/serial`.
+- Disabled DTR and RTS when opening the serial port, targeting communication issues observed with CH340 adapters on Windows 11.
+- Updated the Go baseline and added an automated Windows build workflow.
+- Retained the existing Arduino firmware and configuration format.
+
+**[Experimental Windows builds (GitHub Actions)](https://github.com/Droog-Kloot/deej/actions) | [Report fork-specific issues](https://github.com/Droog-Kloot/deej/issues) | [Original upstream project](https://github.com/omriharel/deej)**
+
+Build success and Windows 11 hardware compatibility are not yet confirmed. The original documentation is retained below for reference; its upstream links and community resources refer to the original project.
+
+---
+
+## Original deej documentation
 
 deej is an **open-source hardware volume mixer** for Windows and Linux PCs. It lets you use real-life sliders (like a DJ!) to **seamlessly control the volumes of different apps** (such as your music player, the game you're playing and your voice chat session) without having to stop what you're doing.
 
-**Join the [deej Discord server](https://discord.gg/nf88NJu) if you need help or have any questions!**
+**Original project community:** [deej Discord server](https://discord.gg/nf88NJu). For issues with this experimental fork, use the fork's issue tracker instead.
 
 [![Discord](https://img.shields.io/discord/702940502038937667?logo=discord)](https://discord.gg/nf88NJu)
 
@@ -10,7 +33,7 @@ deej is an **open-source hardware volume mixer** for Windows and Linux PCs. It l
 
 deej consists of a [lightweight desktop client](#features) written in Go, and an Arduino-based hardware setup that's simple and cheap to build. [**Check out some versions built by members of our community!**](./community.md)
 
-**[Download the latest release](https://github.com/omriharel/deej/releases/latest) | [Video demonstration](https://youtu.be/VoByJ4USMr8) | [Build video by Tech Always](https://youtu.be/x2yXbFiiAeI)**
+**[Download the latest upstream release](https://github.com/omriharel/deej/releases/latest) | [Video demonstration](https://youtu.be/VoByJ4USMr8) | [Build video by Tech Always](https://youtu.be/x2yXbFiiAeI)**
 
 ![deej](assets/build-3d-annotated.png)
 
